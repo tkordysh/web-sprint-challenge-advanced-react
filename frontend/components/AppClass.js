@@ -1,13 +1,30 @@
 import React from 'react'
 
+
+
 export default class AppClass extends React.Component {
   state = {
+    // grid:['1-1', '2-1', '3-1', '1-2', '2-2', '3-2', '1-3', '2-3', '3-3']
     grid:['', '', '', '', 'B', '', '', '', ''],
     totalMoves: 0,
     email: ''
   }
+  
+  gridCoordinates = ['1-1', '2-1', '3-1', '1-2', '2-2', '3-2', '1-3', '2-3', '3-3']
+
+  getCoordinates(array) {
+    const filtered = array.forEach((sqr, idx) => {
+      if (sqr) {
+        console.log(this.gridCoordinates[idx]);
+        return this.gridCoordinates[idx];
+      }})
+      return filtered;
+    }
+  
+    
 
   render() {
+    console.log(this.getCoordinates(this.state.grid))
     const { className } = this.props
     return (
       <div id="wrapper" className={className}>
