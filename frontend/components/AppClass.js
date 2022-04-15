@@ -1,42 +1,68 @@
-import React from 'react'
-
-
+import React from "react";
 
 export default class AppClass extends React.Component {
   state = {
     // grid:['1-1', '2-1', '3-1', '1-2', '2-2', '3-2', '1-3', '2-3', '3-3']
-    grid:['', '', '', '', 'B', '', '', '', ''],
+    grid: ["", "", "", "", "B", "", "", "", ""],
     totalMoves: 0,
-    email: ''
-  }
-  
-  gridCoordinates = ['1-1', '2-1', '3-1', '1-2', '2-2', '3-2', '1-3', '2-3', '3-3']
+  };
 
-  getCoordinates(array) {
-    const filtered = array.forEach((sqr, idx) => {
+  gridCoordinates = [
+    "1, 1",
+    "2, 1",
+    "3, 1",
+    "1, 2",
+    "2, 2",
+    "3, 2",
+    "1, 3",
+    "2, 3",
+    "3, 3"
+  ];
+
+  getCoordinates = (array) => {
+    let index = 0;
+    array.forEach((sqr, idx) => {
       if (sqr) {
-        console.log(this.gridCoordinates[idx]);
-        return this.gridCoordinates[idx];
-      }})
-      return filtered;
-    }
-  
-    
+        index = idx;
+        return;
+      }
+    });
+    return this.gridCoordinates[index];
+  };
+
+  handleMove = () => {
+    this.setState({
+      ...this.state,
+      grid: ["", "", "", "", "B", "", "", "", ""],
+      totalMoves: this.state.totalMoves + 1
+    })
+  }
+
+  resetGrid = () => {
+    this.setState({
+      ...this.state,
+      grid: ["", "", "", "", "B", "", "", "", ""],
+      totalMoves: 0
+    })
+  }
 
   render() {
-    console.log(this.getCoordinates(this.state.grid))
-    const { className } = this.props
+    const { className } = this.props;
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">Coordinates - (2, 2)</h3>
+          <h3 id="coordinates">
+            Coordinates - {this.getCoordinates(this.state.grid)}
+          </h3>
           <h3 id="steps">You moved {this.state.totalMoves} times</h3>
         </div>
         <div id="grid">
           {this.state.grid.map((val, idx) => {
             return (
-              <div key={idx} className={val ? 'square active' : 'square'}>{val}</div>
-            )
+              <div key={idx} className={val ? "square active" : "square"}>
+                {val}
+              </div>
+            );
           })}
           {/* <div className="square"></div>
           <div className="square"></div>
@@ -52,17 +78,17 @@ export default class AppClass extends React.Component {
           <h3 id="message"></h3>
         </div>
         <div id="keypad">
-          <button id="left">LEFT</button>
-          <button id="up">UP</button>
-          <button id="right">RIGHT</button>
-          <button id="down">DOWN</button>
-          <button id="reset">reset</button>
+          <button id="left" onClick={() => this.handleMove()}>LEFT</button>
+          <button id="up" onClick={() => this.handleMove()}>UP</button>
+          <button id="right" onClick={() => this.handleMove()}>RIGHT</button>
+          <button id="down" onClick={() => this.handleMove()}>DOWN</button>
+          <button id="reset" onClick={() => this.resetGrid()}>reset</button>
         </div>
         <form>
           <input id="email" type="email" placeholder="type email"></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>
-    )
+    );
   }
 }
