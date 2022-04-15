@@ -1,16 +1,27 @@
 import React from 'react'
 
 export default class AppClass extends React.Component {
+  state = {
+    grid:['', '', '', '', 'B', '', '', '', ''],
+    totalMoves: 0,
+    email: ''
+  }
+
   render() {
     const { className } = this.props
     return (
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">Coordinates - (2, 2)</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="steps">You moved {this.state.totalMoves} times</h3>
         </div>
         <div id="grid">
-          <div className="square"></div>
+          {this.state.grid.map((val, idx) => {
+            return (
+              <div key={idx} className={val ? 'square active' : 'square'}>{val}</div>
+            )
+          })}
+          {/* <div className="square"></div>
           <div className="square"></div>
           <div className="square"></div>
           <div className="square"></div>
@@ -18,7 +29,7 @@ export default class AppClass extends React.Component {
           <div className="square"></div>
           <div className="square"></div>
           <div className="square"></div>
-          <div className="square"></div>
+          <div className="square"></div> */}
         </div>
         <div className="info">
           <h3 id="message"></h3>
