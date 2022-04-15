@@ -6,7 +6,7 @@ export default class AppClass extends React.Component {
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">Coordinates (2, 2)</h3>
+          <h3 id="coordinates">Coordinates - (2, 2)</h3>
           <h3 id="steps">You moved 0 times</h3>
         </div>
         <div id="grid">
