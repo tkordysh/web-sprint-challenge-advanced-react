@@ -1,22 +1,24 @@
 import React from "react";
+import axios from "axios";
 
 export default class AppClass extends React.Component {
   state = {
-    // grid:['1-1', '2-1', '3-1', '1-2', '2-2', '3-2', '1-3', '2-3', '3-3']
     grid: ["", "", "", "", "B", "", "", "", ""],
     totalMoves: 0,
+    email: '',
+    message: ''
   };
 
   gridCoordinates = [
-    "1, 1",
-    "2, 1",
-    "3, 1",
-    "1, 2",
-    "2, 2",
-    "3, 2",
-    "1, 3",
-    "2, 3",
-    "3, 3"
+    "11",
+    "21",
+    "31",
+    "12",
+    "22",
+    "32",
+    "13",
+    "23",
+    "33"
   ];
 
   getCoordinates = (array) => {
@@ -46,13 +48,41 @@ export default class AppClass extends React.Component {
     })
   }
 
+  handleEmail = (e) => {
+    this.setState({
+      ...this.state,
+      email: e.target.value
+    })
+  }
+
+
+  
+  
+
   render() {
+    const [x, y] = this.getCoordinates(this.state.grid)
     const { className } = this.props;
+
+   const handleSubmit = (e) => {
+      e.preventDefault();
+      axios.post('http://localhost:9000/api/result', { "x": x, "y": y, "steps": this.state.totalMoves, "email": this.state.email })
+        .then(res => {
+          console.log(res.data.message)
+          this.setState({
+            ...this.state,
+            message: res.data.message
+          })
+        })
+        .catch(err => {
+          debugger
+        })
+    }
+
     return (
       <div id="wrapper" className={className}>
         <div className="info">
           <h3 id="coordinates">
-            Coordinates - {this.getCoordinates(this.state.grid)}
+            Coordinates ({x}, {y})
           </h3>
           <h3 id="steps">You moved {this.state.totalMoves} times</h3>
         </div>
@@ -75,7 +105,7 @@ export default class AppClass extends React.Component {
           <div className="square"></div> */}
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
           <button id="left" onClick={() => this.handleMove()}>LEFT</button>
@@ -84,8 +114,8 @@ export default class AppClass extends React.Component {
           <button id="down" onClick={() => this.handleMove()}>DOWN</button>
           <button id="reset" onClick={() => this.resetGrid()}>reset</button>
         </div>
-        <form>
-          <input id="email" type="email" placeholder="type email"></input>
+        <form onSubmit={handleSubmit}>
+          <input id="email" type="email" placeholder="type email" onChange={this.handleEmail}></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>
