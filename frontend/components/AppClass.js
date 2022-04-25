@@ -22,12 +22,15 @@ export default class AppClass extends React.Component {
     return this.gridCoordinates[index];
   };
 
+  // findCurrentIndex = (grid) => {
+  //   return grid.indexOf("B")
+  // }
+
+  // getGridBasedOnMove = () => {
+  // }
+
+
   handleMove = () => {
-    this.setState({
-      ...this.state,
-      grid: ["", "", "", "", "B", "", "", "", ""],
-      totalMoves: this.state.totalMoves + 1,
-    });
   };
 
 
@@ -52,6 +55,7 @@ export default class AppClass extends React.Component {
   render() {
     const [x, y] = this.getCoordinates(this.state.grid);
     const { className } = this.props;
+    // console.log(this.findCurrentIndex(this.state.grid));
 
     const handleSubmit = (e) => {
       e.preventDefault();
@@ -68,14 +72,15 @@ export default class AppClass extends React.Component {
             message: res.data.message,
           });
         })
-        .catch((err) => {
-          console.error(err);
+        .catch((res) => {
+          console.log(res);
         });
       this.setState({
         ...this.state,
         email: ""
       })
     };
+
 
     return (
       <div id="wrapper" className={className}>
