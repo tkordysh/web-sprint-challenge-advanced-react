@@ -3,21 +3,43 @@ import axios from "axios";
 
 export default class AppClass extends React.Component {
   state = {
-    grid: ["", "", "", "", "B", "", "", "", ""],
+    // grid: ["", "", "", "", "B", "", "", "", ""],
+    grid: [
+      [null, null, null],
+      [null, "B", null],
+      [null, null, null],
+    ],
     totalMoves: 0,
     email: "",
     message: "",
   };
 
-  gridCoordinates = ["11", "21", "31", "12", "22", "32", "13", "23", "33"];
+  gridCoordinates = [
+    ["11", "21", "31"],
+    ["12", "22", "32"],
+    ["13", "23", "33"],
+  ];
 
-  getCoordinates = (array) => {
+  // getCoordinates = (array) => {
+  //   let index = 0;
+  //   array.forEach((sqr, idx) => {
+  //     if (sqr) {
+  //       index = idx;
+  //       return;
+  //     }
+  //   });
+  //   return this.gridCoordinates[index];
+  // };
+
+  GetCoordinates = (array) => {
     let index = 0;
-    array.forEach((sqr, idx) => {
-      if (sqr) {
-        index = idx;
-        return;
-      }
+    array.forEach((nestedArr) => {
+      return nestedArr.forEach((sqr, idx) => {
+        if (sqr) {
+          index = idx;
+          return;
+        }
+      });
     });
     return this.gridCoordinates[index];
   };
@@ -29,21 +51,21 @@ export default class AppClass extends React.Component {
   // getGridBasedOnMove = () => {
   // }
 
-
-  handleMove = () => {
-  };
-
+  handleMove = () => {};
 
   resetGrid = () => {
     this.setState({
       ...this.state,
-      grid: ["", "", "", "", "B", "", "", "", ""],
+      grid: [
+        [null, null, null],
+        [null, "B", null],
+        [null, null, null],
+      ],
       totalMoves: 0,
       email: "",
       message: "",
     });
   };
-
 
   handleEmail = (e) => {
     this.setState({
@@ -53,7 +75,8 @@ export default class AppClass extends React.Component {
   };
 
   render() {
-    const [x, y] = this.getCoordinates(this.state.grid);
+    console.log(this.GetCoordinates(this.state.grid));
+    // const [x, y] = this.newGetCoordinates(this.state.grid);
     const { className } = this.props;
     // console.log(this.findCurrentIndex(this.state.grid));
 
@@ -67,36 +90,42 @@ export default class AppClass extends React.Component {
           email: this.state.email,
         })
         .then((res) => {
+          console.log(res);
           this.setState({
             ...this.state,
             message: res.data.message,
           });
         })
-        .catch((res) => {
-          console.log(res);
+        .catch((err) => {
+          this.setState({
+            ...this.state,
+            message: err.response.data.message,
+          });
         });
       this.setState({
         ...this.state,
-        email: ""
-      })
+        email: "",
+      });
     };
-
 
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">
-            Coordinates ({x}, {y})
-          </h3>
+          <h3 id="coordinates">{/* Coordinates ({x}, {y}) */}</h3>
           <h3 id="steps">You moved {this.state.totalMoves} times</h3>
         </div>
         <div id="grid">
-          {this.state.grid.map((val, idx) => {
-            return (
-              <div key={idx} className={val ? "square active" : "square"}>
-                {val}
-              </div>
-            );
+          {this.state.grid.map((nestedArr, idxY) => {
+            return nestedArr.map((val, idxX) => {
+              return (
+                <div
+                  key={idxY + idxX}
+                  className={val === "B" ? "square active" : "square"}
+                >
+                  {val}
+                </div>
+              );
+            });
           })}
           {/* <div className="square"></div>
           <div className="square"></div>
