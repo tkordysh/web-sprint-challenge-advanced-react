@@ -3,7 +3,6 @@ import axios from "axios";
 
 export default class AppClass extends React.Component {
   state = {
-    // grid: ["", "", "", "", "B", "", "", "", ""],
     grid: [
       [null, null, null],
       [null, "B", null],
@@ -14,44 +13,95 @@ export default class AppClass extends React.Component {
     message: "",
   };
 
-  gridCoordinates = [
-    ["11", "21", "31"],
-    ["12", "22", "32"],
-    ["13", "23", "33"],
-  ];
 
-  // getCoordinates = (array) => {
-  //   let index = 0;
-  //   array.forEach((sqr, idx) => {
-  //     if (sqr) {
-  //       index = idx;
-  //       return;
-  //     }
-  //   });
-  //   return this.gridCoordinates[index];
-  // };
-
-  GetCoordinates = (array) => {
-    let index = 0;
-    array.forEach((nestedArr) => {
-      return nestedArr.forEach((sqr, idx) => {
-        if (sqr) {
-          index = idx;
-          return;
+  getCoordinates = () => {
+    let array = this.state.grid;
+    let xy = [];
+    for (let idY = 0; idY < array.length; idY++) {
+      const nestedArr = array[idY];
+      for (let idX = 0; idX < nestedArr.length; idX++) {
+        const sqr = nestedArr[idX];
+        if (sqr === "B") {
+          xy = [idX + 1, idY + 1];
+          return xy;
         }
-      });
-    });
-    return this.gridCoordinates[index];
+      }
+    }
   };
 
-  // findCurrentIndex = (grid) => {
-  //   return grid.indexOf("B")
-  // }
-
-  // getGridBasedOnMove = () => {
-  // }
-
-  handleMove = () => {};
+  handleMove = (direction) => {
+    let x = this.getCoordinates()[0] - 1;
+    let y = this.getCoordinates()[1] - 1;
+    const newGrid = [...this.state.grid]
+    switch(direction) {
+      case "L":
+        //left functionality ---- x - 1 until we hit the left border (aka x = 1) then display error msg
+        if (x > 0) {
+          newGrid[y][x] = null
+          x = x - 1;
+          newGrid[y][x] = "B"
+          this.setState({
+            grid: newGrid,
+            totalMoves: this.state.totalMoves + 1,
+          })
+        } else {
+          this.setState({
+            message: "You can't go left"
+          })
+        }
+        break;
+      case "R":
+        //right functionality ---- x + 1 until we hit the right border (aka x = 3) then display error msg
+        if (x < 2) {
+          newGrid[y][x] = null
+          x = x + 1;
+          newGrid[y][x] = "B"
+          this.setState({
+            grid: newGrid,
+            totalMoves: this.state.totalMoves + 1,
+          })
+        } else {
+          this.setState({
+            message: "You can't go right"
+          })
+        }
+        break;
+      case "U":
+        //up functionality ---- y - 1 until we hit the top border (aka y = 1) then display error msg
+        if (y > 0) {
+          newGrid[y][x] = null
+          y = y - 1;
+          newGrid[y][x] = "B"
+          this.setState({
+            grid: newGrid,
+            totalMoves: this.state.totalMoves + 1,
+          })
+        } else {
+          this.setState({
+            message: "You can't go up"
+          })
+        }
+        break;
+      case "D":
+        //down functionality ---- y + 1 until we hit the top border (aka y = 1) then display error msg 
+        if (y < 2) {
+          newGrid[y][x] = null
+          y = y + 1;
+          newGrid[y][x] = "B"
+          this.setState({
+            grid: newGrid,
+            totalMoves: this.state.totalMoves + 1,
+          })
+        } else {
+          this.setState({
+            message: "You can't go down"
+          })
+        }
+        break;
+      default:
+        return this.state    
+    }
+  }
 
   resetGrid = () => {
     this.setState({
@@ -74,45 +124,46 @@ export default class AppClass extends React.Component {
     });
   };
 
-  render() {
-    console.log(this.GetCoordinates(this.state.grid));
-    // const [x, y] = this.newGetCoordinates(this.state.grid);
-    const { className } = this.props;
-    // console.log(this.findCurrentIndex(this.state.grid));
-
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      axios
-        .post("http://localhost:9000/api/result", {
-          x: x,
-          y: y,
-          steps: this.state.totalMoves,
-          email: this.state.email,
-        })
-        .then((res) => {
-          console.log(res);
-          this.setState({
-            ...this.state,
-            message: res.data.message,
-          });
-        })
-        .catch((err) => {
-          this.setState({
-            ...this.state,
-            message: err.response.data.message,
-          });
+  handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:9000/api/result", {
+        x: this.getCoordinates()[0],
+        y: this.getCoordinates()[1],
+        steps: this.state.totalMoves,
+        email: this.state.email,
+      })
+      .then((res) => {
+        this.setState({
+          ...this.state,
+          message: res.data.message,
         });
-      this.setState({
-        ...this.state,
-        email: "",
+      })
+      .catch((err) => {
+        this.setState({
+          ...this.state,
+          message: err.response.data.message,
+        });
       });
-    };
+    this.setState({
+      ...this.state,
+      email: "",
+    });
+  };
+
+  render() {
+    const x = this.getCoordinates()[0];
+    const y = this.getCoordinates()[1];
+    const { className } = this.props;
+
 
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">{/* Coordinates ({x}, {y}) */}</h3>
-          <h3 id="steps">You moved {this.state.totalMoves} times</h3>
+          <h3 id="coordinates">
+            Coordinates ({x}, {y})
+          </h3>
+          <h3 id="steps">You moved {this.state.totalMoves} time{this.state.totalMoves === 1 ? '' : 's'}</h3>
         </div>
         <div id="grid">
           {this.state.grid.map((nestedArr, idxY) => {
@@ -127,37 +178,28 @@ export default class AppClass extends React.Component {
               );
             });
           })}
-          {/* <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square active">B</div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div> */}
         </div>
         <div className="info">
           <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
-          <button id="left" onClick={() => this.handleMove()}>
+          <button id="left" onClick={() => this.handleMove("L")}>
             LEFT
           </button>
-          <button id="up" onClick={() => this.handleMove()}>
+          <button id="up" onClick={() => this.handleMove("U")}>
             UP
           </button>
-          <button id="right" onClick={() => this.handleMove()}>
+          <button id="right" onClick={() => this.handleMove("R")}>
             RIGHT
           </button>
-          <button id="down" onClick={() => this.handleMove()}>
+          <button id="down" onClick={() => this.handleMove("D")}>
             DOWN
           </button>
           <button id="reset" onClick={() => this.resetGrid()}>
             reset
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
           <input
             id="email"
             type="email"
